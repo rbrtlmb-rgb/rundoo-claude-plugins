@@ -1,0 +1,8 @@
+{
+  "name": "rundoo",
+  "description": "Rundoo internal workflow skills for Claude Code — including Notion bug ticket creation against the CX Tickets database.",
+  "author": {
+    "name": "Rundoo"
+  },
+  "keywords": ["rundoo", "notion", "bug-tracking", "cx", "internal"]
+}

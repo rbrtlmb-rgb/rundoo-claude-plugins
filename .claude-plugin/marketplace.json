@@ -1,0 +1,15 @@
+{
+  "name": "rundoo-plugins",
+  "description": "Internal Claude Code plugins for the Rundoo team — workflow skills, automations, and helpers.",
+  "owner": {
+    "name": "Rundoo",
+    "email": "team@rundoo.ai"
+  },
+  "plugins": [
+    {
+      "name": "rundoo",
+      "source": "./plugins/rundoo",
+      "description": "Rundoo workflow skills (Notion bug tickets, and more to come)."
+    }
+  ]
+}
