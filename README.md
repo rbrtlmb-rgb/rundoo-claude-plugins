@@ -15,11 +15,9 @@ Internal Claude Code plugins for the Rundoo team. Bundles workflow skills that a
 In Claude Code, run:
 
 ```
-/plugin marketplace add rundoo/rundoo-claude-plugins
+/plugin marketplace add rbrtlmb-rgb/rundoo-claude-plugins
 /plugin install rundoo@rundoo-plugins
 ```
-
-Replace `rundoo/rundoo-claude-plugins` with the actual `<owner>/<repo>` once this is pushed to GitHub.
 
 After install, the skill is available as `/rundoo:bug-ticket` (or just describe what you want — "file a bug for X" — and Claude will trigger it).
 
