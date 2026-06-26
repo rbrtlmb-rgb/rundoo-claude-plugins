@@ -1,6 +1,6 @@
 ---
 name: bug-ticket
-description: Create a bug ticket in Notion's "CX Tickets" database using the standard Rundoo bug template. Triggers on "create a bug ticket", "file a bug", "/bug-ticket", or similar phrasings. Gathers details from conversation context (or prompts for missing fields), confirms with the user, then creates the page with Ticket Type=Bug, Status=To Review, and the template content sections filled in.
+description: Create a bug ticket in Notion's "CX Tickets" database using the standard Rundoo bug template. Triggers on "create a bug ticket", "file a bug", "/bug-ticket", or similar phrasings. Gathers details from conversation context (or prompts for missing fields), confirms with the user, then creates the page with Ticket Type=Bug, Status=Triage, and the template content sections filled in.
 ---
 
 # Create Bug Ticket in Notion (CX Tickets)
@@ -20,7 +20,7 @@ Gather these from the conversation context first. Only ask the user for items th
 | Field | Required? | Notes |
 |---|---|---|
 | Title (the bug summary) | Yes | Format as `[Bug] - <concise issue>`. Keep under ~80 chars. |
-| Subdomain / Client | Yes | Which client subdomain(s) are affected. If "all" or unknown, ask. Must be a value in the `Client` multi-select options. |
+| Subdomain / Client | Yes | Which client subdomain(s) are affected. If "all" or unknown, ask. Must be a value in the `Clients` multi-select options. |
 | Expected Experience | Yes | What should happen. |
 | Actual Experience | Yes | What is happening. |
 | Reproducible? | Yes | YES / NO. If YES, capture numbered repro steps. If NO, capture why. |
@@ -39,12 +39,12 @@ Use `mcp__claude_ai_Notion__notion-create-pages` (load via ToolSearch if not yet
 
 - `parent.data_source_id`: `24de1139-86ea-80eb-ab35-000b4262aaf4`
 - `pages[0].properties`:
-  - `title` (the title-property): the formatted title
+  - `""` (the title-property — its name is an **empty string**, not `title`): the formatted title
   - `Ticket Type`: `Bug`
-  - `Status`: `To Review`
+  - `" Status"` (the status-property name has a **leading space** — `"Status"` without it errors): `Triage`
   - `Priority`: as selected (default `High`)
   - `Tag`: include `🐞 Bug`
-  - `Client`: array of selected subdomain values (must match existing options exactly)
+  - `Clients`: array of selected subdomain values (must match existing options exactly)
   - `Intercom`: URL if provided
 - `pages[0].content`: enhanced-Markdown body following the template structure below
 
@@ -84,16 +84,18 @@ Report back to the user with the page URL. Keep it short — one line with the l
 These are the only valid values for selects/multi-selects on this database. If the user gives something that doesn't match, ask for clarification rather than guessing.
 
 - **Priority** (select): `Most Urgent`, `Urgent`, `High`, `Medium`, `Low`
-- **Status** (status): use `To Review` for new bugs
+- **Status** (status — property key is `" Status"` with a **leading space**): use `Triage` for new bugs (the natural entry point; `To Review` no longer exists). Full options: `Triage`, `Integrations Wishlist`, `Tyler - Data Exploration`, `George Review`, `Tyler Data Edits`, `Tyler Data Re-Upload`, `Stuck`, `Reoccuring`, `NICK REJECTED`, `NICK TO REVIEW`, `NICK ACCEPTED`, `Parser Backlog`, `Blocked`, `Blocked by CS/IM`, `Working`, `Working - Building Integration`, `Working - Setup Only`, `Ready`, `Parser Completed - Eng`, `Data Uploaded`, `Cancelled`, `Done`.
 - **Ticket Type** (select): always `Bug` for this skill
 - **Tag** (multi-select): include `🐞 Bug`; other relevant tags from the schema may be added if clearly applicable (`🤖 Tech`, `🔌 Integrations`, `📊 Reporting/AI`, `📖 Ledger`, etc.)
-- **Client** (multi-select): must exactly match an existing subdomain option (e.g., `aboffs`, `scoreseed`, `all`). The full list lives in the data source schema — fetch it via `notion-fetch` on the collection URL above if needed.
+- **Clients** (multi-select — note the **plural** name; `Client` errors): must exactly match an existing subdomain option (e.g., `aboffs`, `scoreseed`, `all`). The full list lives in the data source schema — fetch it via `notion-fetch` on the collection URL above if needed.
 
-If the user names a client that isn't an existing option (e.g., a new client subdomain), tell them and ask whether to (a) pick the closest existing match, (b) use `all`, or (c) skip the Client property.
+> **Title property gotcha:** the title property's name is an **empty string** (`""`), not `title`. Set it as the `""` key in `properties`.
+
+If the user names a client that isn't an existing option (e.g., a new client subdomain), tell them and ask whether to (a) pick the closest existing match, (b) use `all`, or (c) skip the `Clients` property.
 
 ## Edge cases
 
-- **Multiple clients affected** → set `Client` as a multi-select array with all the subdomains.
-- **Unknown subdomain** → use `all` for the Client property and put "Unknown / multiple" in the Subdomain content section.
+- **Multiple clients affected** → set `Clients` as a multi-select array with all the subdomains.
+- **Unknown subdomain** → use `all` for the `Clients` property and put "Unknown / multiple" in the Subdomain content section.
 - **No repro yet** → set "NO" and put the reason in the steps section.
 - **Bug originates from this conversation** (e.g., user described a problem they just hit) → infer fields from context, then confirm before creating.
