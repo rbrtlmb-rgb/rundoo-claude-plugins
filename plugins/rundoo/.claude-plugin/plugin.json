@@ -1,6 +1,6 @@
 {
   "name": "rundoo",
-  "description": "Rundoo internal workflow skills for Claude Code — including Notion bug ticket creation against the CX Tickets database.",
+  "description": "Rundoo internal workflow skills for Claude Code — including Notion bug ticket creation against the GTM → R&D intake database.",
   "author": {
     "name": "Rundoo"
   },
