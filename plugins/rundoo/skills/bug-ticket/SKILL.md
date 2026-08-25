@@ -245,6 +245,17 @@ YES / NO — <frequency, e.g. "every time, 4 for 4">. <Where: POS/web, browser, 
 
 Keep the emoji and heading wording as-is — reviewers scan for that shape. If `notion-fetch` on the template shows different headings, follow the template.
 
+**Plain characters only in body text.** Notion escapes markdown-significant characters it finds mid-sentence, so they render with a visible backslash. Write the word instead:
+
+| Don't write | Write |
+|---|---|
+| `~5K rows` | `about 5K rows` |
+| `~2 min`, `~$40 off` | `about 2 min`, `about $40 off` |
+| `qty 1 * $48.00` | `qty 1 at $48.00` |
+| `order_id`, `snake_case` mid-sentence | wrap it in backticks |
+
+The same goes for a stray `#`, `>` or `|` starting a line — it turns into a heading, quote or table. Backtick it or reword. Confirmed live on SUP-3100, where `(~5K rows)` published as `(\~5K rows)`.
+
 ## After creating
 
 Report back with the page URL — one line is enough.
