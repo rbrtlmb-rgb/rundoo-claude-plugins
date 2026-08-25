@@ -64,7 +64,7 @@ Title: `[Bug] - Tax is $0 on special orders at aboffs`
 
 ```
 ### 🌐 Subdomain
-- aboffs
+- [aboffs.rundoo.app](https://aboffs.rundoo.app)
 
 ### 🎯 **Expected Experience:** *Describe what should happen.*
 - Special orders should charge tax like any other order.
@@ -219,7 +219,7 @@ Mirror the live template's structure:
 
 ```
 ### 🌐 Subdomain
-- <subdomain, or "Client Subdomains" if unknown>
+- [<subdomain>.rundoo.app](https://<subdomain>.rundoo.app)
 
 ### 🎯 **Expected Experience:** *Describe what should happen.*
 - <expected experience>
@@ -244,6 +244,12 @@ YES / NO — <frequency, e.g. "every time, 4 for 4">. <Where: POS/web, browser, 
 ```
 
 Keep the emoji and heading wording as-is — reviewers scan for that shape. If `notion-fetch` on the template shows different headings, follow the template.
+
+**Link the subdomain.** The Subdomain line is a link, not bare text: label `<subdomain>.rundoo.app`, pointing at the client's app root `https://<subdomain>.rundoo.app`. That is exactly the `App URL` column from the Client DB lookup, so use the value you already fetched. It saves triage a copy-paste into the right tenant.
+
+- Several clients → one link per line.
+- All clients or unknown → plain text (`All clients`, `Unknown / multiple`), since there is no single tenant to point at.
+- A deep link to the specific broken page belongs in the repro steps, not here — this line answers "whose account," not "which screen."
 
 **Plain characters only in body text.** Notion escapes markdown-significant characters it finds mid-sentence, so they render with a visible backslash. Write the word instead:
 
@@ -272,7 +278,7 @@ Verified against the live schema. If the user gives a value that isn't listed, a
 
 ## Edge cases
 
-- **Unknown subdomain** → use the `ALL` relation page and put "Unknown / multiple" in the Subdomain body section.
+- **Unknown subdomain** → use the `ALL` relation page and put plain text "Unknown / multiple" in the Subdomain body section — no link, since there is no single tenant.
 - **No repro yet** → `NO`, plus what was tried and what is still unknown. Don't collapse it to one line; see "The reproduce section."
 - **Bug came from an Intercom conversation** → the link goes in Related Tickets / Context; there is no `Intercom` property.
 - **Bug originates from this conversation** → infer the fields from context, then confirm before creating.
