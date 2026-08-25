@@ -1,6 +1,6 @@
 ---
 name: bug-ticket
-description: Create a bug ticket in Notion's "GTM → R&D" intake database (formerly "CX Tickets") using the standard Rundoo [Bug] - [Issue] template. Triggers on "create a bug ticket", "file a bug", "/bug-ticket", or similar phrasings. Gathers details from conversation context (or prompts for missing fields), confirms with the user, then creates the page with Status=Triage, Tag=🐞 Bug, and the template content sections filled in.
+description: Create a bug ticket in Notion's "GTM → R&D" intake database (formerly "CX Tickets") using the standard Rundoo [Bug] - [Issue] template. Triggers on "create a bug ticket", "file a bug", "/bug-ticket", or similar phrasings. Gathers details from conversation context (or prompts for missing fields), then writes the ticket concisely in the reporter's own voice — plain language, no AI-style analysis or suggested fixes — confirms the wording with the user, and creates the page with Status=Triage, Tag=🐞 Bug.
 ---
 
 # Create Bug Ticket in Notion (GTM → R&D)
@@ -17,9 +17,69 @@ So, before creating anything:
 
 1. Tell the user the template asks authors not to use AI, and get an explicit go-ahead for this ticket.
 2. If they proceed, do **not** reproduce the callout in the ticket body — it is an instruction to the author, not ticket content.
-3. Add a single line at the end of the body noting the ticket was drafted with Claude from the reporter's description, so reviewers aren't misled about its provenance.
+3. Show the user the full body text before creating it. They are the author of record and the ticket goes out under their name, so they read it and approve the wording — that is where the human check lives.
 
 If the user would rather file by hand, offer to hand them the filled-in sections as text to paste into the Notion template themselves.
+
+## Write it the way the reporter would
+
+These tickets go to engineers who triage a queue. A ticket that states the problem and stops is faster to act on than one that explains, hedges, and recommends. Write as the reporter — first person, plain, specific — not as an assistant summarizing a conversation.
+
+**Length budget.** The whole body should fit on one screen.
+
+- Title: under ~70 characters.
+- Expected and Actual: one or two short sentences each. Often one is enough.
+- Repro: numbered imperatives, typically 3–6 steps, none longer than a line.
+- Nothing else unless it actually exists (screenshots, related links).
+
+**Write like this**
+
+- Plain and direct: "Tax isn't applying to special orders." "Customer called about this twice today."
+- Concrete specifics over description: store, order number, SKU, timestamp, browser, POS vs web.
+- Fragments are fine: "Only in Chrome. Works in Safari."
+- Say only what is known. If the reporter didn't say when it started, don't write "recently."
+
+**Do not write**
+
+- Suggested fixes, root-cause guesses, or `Impact` / `Recommendation` / `Next steps` sections. Triage decides those. If the reporter volunteered a theory, put it in Related Tickets / Context in their own words and label it as their guess.
+- Hedges: "it appears," "it seems," "this may be due to."
+- Essay connectors: "Additionally," "Furthermore," "Moreover," "Notably," "Overall."
+- Padding adjectives: "critical," "seamless," "significant," "robust."
+- A closing summary sentence. The last section is the last word.
+- Bold or emoji inside section text — the headings already carry the formatting.
+
+**Titles.** Name what is broken and where. Skip process verbs ("investigate," "look into") and condition pileups.
+
+| Instead of | Write |
+|---|---|
+| `[Bug] - Investigation into intermittent tax calculation discrepancies affecting special order workflows` | `[Bug] - Tax is $0 on special orders` |
+| `[Bug] - User reports inability to complete checkout under certain conditions` | `[Bug] - Checkout fails on split payment` |
+| `[Bug] - Printing issue` | `[Bug] - Invoice prints blank` |
+
+Name the client in the title only when the bug is specific to that client.
+
+**Worked example.** Reporter says: *"aboffs called, when they ring up a special order the tax line is 0. started yesterday I think. happens on every special order, regular orders are fine."*
+
+Title: `[Bug] - Tax is $0 on special orders at aboffs`
+
+```
+### 🌐 Subdomain
+- aboffs
+
+### 🎯 **Expected Experience:** *Describe what should happen.*
+- Special orders should charge tax like any other order.
+
+### ⚠️ **Actual Experience:** *Describe what is happening.*
+- Tax line comes through as $0 on every special order. Regular orders are fine. Reporter thinks it started yesterday.
+
+### 🔁 **Can you reproduce? If so, list steps. If not, explain why.**
+NO
+- Reported by aboffs over the phone, not reproduced in-house yet.
+```
+
+That is the whole ticket. No impact paragraph, no theory about tax rules, no next steps.
+
+**When detail is missing, stay thin — do not pad.** Ask the reporter one batched round of questions for what triage will obviously need (subdomain, whether it reproduces, when it started), then file with what you have. Never invent a repro step, a timestamp, or a browser you were not given: a short accurate ticket is useful, a padded speculative one wastes triage time and gets the skill distrusted.
 
 ## Target
 
@@ -44,7 +104,7 @@ Gather these from conversation context first. Only ask about what is genuinely m
 
 | Field | Required? | Notes |
 |---|---|---|
-| Title | Yes | Format as `[Bug] - <concise issue>`. Keep under ~80 chars. |
+| Title | Yes | `[Bug] - <what's broken, where>`. Under ~70 chars. See "Write it the way the reporter would." |
 | Client / subdomain | Yes | Which client subdomain(s) are affected, or all of them. Resolved to `Clients` relation pages — see below. |
 | Expected Experience | Yes | What should happen. |
 | Actual Experience | Yes | What is happening. |
@@ -72,7 +132,9 @@ In Client DB, `Name` **is** the subdomain, lowercase and exact (`aboffs`, `abbot
 
 ## Confirmation before creating
 
-Always show a compact preview — title, priority, resolved client(s), and a one-line summary of each section — and get confirmation before calling the Notion tool. If the user wants edits, apply them and re-confirm.
+Show the user the **actual title and body text**, verbatim, not a summary of it — plus the priority and resolved client(s). They are filing this under their name, so they need to read the words that will land in Notion and adjust the voice if it doesn't sound like them. Apply any edits and re-confirm.
+
+If the draft has grown past one screen, cut it before showing it.
 
 ## How to create the page
 
@@ -122,8 +184,6 @@ YES / NO
 
 **🧩 Related Tickets / Context**
 <related links, or "None">
-
-*Drafted with Claude from the reporter's description.*
 ```
 
 Keep the emoji and heading wording as-is — reviewers scan for that shape. If `notion-fetch` on the template shows different headings, follow the template.
