@@ -8,7 +8,7 @@ Internal Claude Code plugins for the Rundoo team. Bundles workflow skills that a
 
 | Skill | Invocation | What it does |
 |---|---|---|
-| Bug ticket | `/rundoo:bug-ticket` | Files a bug in the Notion **🪲 CX Tickets** database using the standard `[Bug] - [Actual Issue]` template. Pulls details from conversation context, confirms with you, then creates the page. |
+| Bug ticket | `/rundoo:bug-ticket` | Files a bug in the Notion **🎟️ GTM → R&D** database (formerly 🪲 CX Tickets) using the standard `[Bug] - [Issue]` template. Pulls details from conversation context, resolves the affected client subdomains, confirms with you, then creates the page. |
 
 ## Install
 
