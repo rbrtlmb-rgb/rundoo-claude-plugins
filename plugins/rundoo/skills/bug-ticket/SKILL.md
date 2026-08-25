@@ -29,7 +29,7 @@ These tickets go to engineers who triage a queue. A ticket that states the probl
 
 - Title: under ~70 characters.
 - Expected and Actual: one or two short sentences each. Often one is enough.
-- Repro: numbered imperatives, typically 3–6 steps, none longer than a line.
+- **Repro steps are the exception — spend detail here.** See "The reproduce section" below.
 - Nothing else unless it actually exists (screenshots, related links).
 
 **Write like this**
@@ -73,13 +73,68 @@ Title: `[Bug] - Tax is $0 on special orders at aboffs`
 - Tax line comes through as $0 on every special order. Regular orders are fine. Reporter thinks it started yesterday.
 
 ### 🔁 **Can you reproduce? If so, list steps. If not, explain why.**
-NO
-- Reported by aboffs over the phone, not reproduced in-house yet.
+NO — reported by aboffs over the phone, not reproduced in-house yet.
+- They say it's every special order; regular orders ring up tax fine.
+- Haven't checked which register or clerk. Asked them to send a screenshot of the order.
 ```
 
-That is the whole ticket. No impact paragraph, no theory about tax rules, no next steps.
+Everything outside the repro section is clipped: no impact paragraph, no theory about tax rules, no next steps. The repro section is where the detail goes — see below.
 
 **When detail is missing, stay thin — do not pad.** Ask the reporter one batched round of questions for what triage will obviously need (subdomain, whether it reproduces, when it started), then file with what you have. Never invent a repro step, a timestamp, or a browser you were not given: a short accurate ticket is useful, a padded speculative one wastes triage time and gets the skill distrusted.
+
+## The reproduce section
+
+This is the one section worth being generous with. Terse Expected/Actual lines tell an engineer *what* is wrong; the repro tells them how to *see* it, which is what actually gets a bug fixed. Be thorough here even though the rest of the ticket is clipped.
+
+The brevity rules still apply in one respect: more **observation**, not more **analysis**. Extra detail means the exact click path and the exact data used — never a theory about why it happens.
+
+**Lead with the setup**, then the steps. State whatever of this is known:
+
+- Where: POS register, web back office, mobile; which page or menu.
+- Who: user role or permission level, if it might matter.
+- Environment: browser and OS, printer or hardware model, Chrome vs Edge.
+- Starting data: the specific order, customer, SKU, or account used — real identifiers, not "an order."
+- Frequency: every time, or how often out of how many tries.
+
+**Then number the steps.** Each one an imperative the engineer can follow blind:
+
+- One action per step. "Add SKU 41255 to the cart," not "add items and go to checkout."
+- Include the exact values typed or selected — quantities, tender amounts, discount codes, dates.
+- Mark the step where it goes wrong and say what appears instead: "→ tax line shows $0.00."
+- Note anything already ruled out: "Same on a fresh browser profile." "Only special orders; regular orders are fine."
+
+Ten specific steps beat four vague ones. Do not compress a path the engineer has to guess at.
+
+**When it cannot be reproduced,** the section still carries weight — say what was tried and what is missing, so triage knows where to start rather than re-treading it:
+
+```
+NO
+- Reported by aboffs over the phone; not reproduced in-house yet.
+- Tried on my end: two special orders on the demo tenant, tax applied correctly both times.
+- Haven't confirmed which register or whether it's every clerk. Waiting on a screenshot of the order.
+```
+
+**Worked example, YES case.** Reporter says: *"can't take a split payment — put half on card half on cash and it errors out. happens every time at the front register."*
+
+Title: `[Bug] - Checkout fails on split cash/card payment`
+
+```
+### 🔁 **Can you reproduce? If so, list steps. If not, explain why.**
+YES — every time, 4 for 4 attempts. Front register (POS), Chrome on Windows 11, clerk role.
+
+1. Start a new sale at the POS.
+2. Add SKU 41255, qty 1 ($48.00).
+3. Tap Checkout, then Split Payment.
+4. Enter $20.00 as Cash and tap Apply. → applies fine, $28.00 balance remains.
+5. Select Card for the remaining $28.00 and swipe.
+6. → Spinner hangs about 10 seconds, then "Payment could not be completed."
+   Sale stays open and the $20.00 cash is still applied.
+
+Full card payment on the same order works. Cash-only works. Same on a fresh
+browser profile and a second register.
+```
+
+Note what that example does not do: no guess about the payment processor, no suggested fix. Just the path and the observation.
 
 ## Target
 
@@ -108,7 +163,7 @@ Gather these from conversation context first. Only ask about what is genuinely m
 | Client / subdomain | Yes | Which client subdomain(s) are affected, or all of them. Resolved to `Clients` relation pages — see below. |
 | Expected Experience | Yes | What should happen. |
 | Actual Experience | Yes | What is happening. |
-| Reproducible? | Yes | YES / NO. If YES, numbered repro steps. If NO, why not. |
+| Reproducible? | Yes | YES / NO, plus frequency. If YES, setup + numbered steps with exact values — go into detail here. If NO, what was tried and what's still unknown. See "The reproduce section." |
 | Priority | Default `High` | `Most Urgent`, `Urgent`, `High`, `Medium`, `Low`. Ask if severity seems off from the default. |
 | Screenshots / Recordings | Optional | URLs or descriptions. `None` if there are none. |
 | Related Tickets / Context | Optional | Intercom links, prior tickets, Slack threads. There is no longer an `Intercom` property — put the link in this body section. |
@@ -173,9 +228,11 @@ Mirror the live template's structure:
 - <actual experience>
 
 ### 🔁 **Can you reproduce? If so, list steps. If not, explain why.**
-YES / NO
-1. <step>
-2. <step>
+YES / NO — <frequency, e.g. "every time, 4 for 4">. <Where: POS/web, browser, role.>
+1. <one action, with the exact value used>
+2. <...>
+3. → <what appears instead, at the step where it breaks>
+<what was already ruled out, or — if NO — what was tried and what's still unknown>
 
 ### **📸 Screenshots / Recordings:** *(Attach any visuals that help clarify the issue)*
 <screenshot URLs, or "None">
@@ -205,7 +262,7 @@ Verified against the live schema. If the user gives a value that isn't listed, a
 ## Edge cases
 
 - **Unknown subdomain** → use the `ALL` relation page and put "Unknown / multiple" in the Subdomain body section.
-- **No repro yet** → `NO`, with the reason in that section.
+- **No repro yet** → `NO`, plus what was tried and what is still unknown. Don't collapse it to one line; see "The reproduce section."
 - **Bug came from an Intercom conversation** → the link goes in Related Tickets / Context; there is no `Intercom` property.
 - **Bug originates from this conversation** → infer the fields from context, then confirm before creating.
 - **Parser bug** → this database has separate `[Parser Bug] - [Issue]` and `[Parser Ticket] - [Request]` templates. If the bug is parser/data-ingestion related, say so and ask whether to use the parser template instead.
