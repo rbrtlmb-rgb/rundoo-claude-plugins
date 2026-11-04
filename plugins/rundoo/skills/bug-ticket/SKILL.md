@@ -1,13 +1,13 @@
 ---
 name: bug-ticket
-description: Create a bug ticket in Notion's "GTM → R&D" intake database (formerly "CX Tickets") using the standard Rundoo [Bug] - [Issue] template. Triggers on "create a bug ticket", "file a bug", "/bug-ticket", or similar phrasings. Gathers details from conversation context (or prompts for missing fields), then writes the ticket concisely in the reporter's own voice — plain language, no AI-style analysis or suggested fixes — confirms the wording with the user, and creates the page with Status=Triage, Tag=🐞 Bug.
+description: Create a bug ticket in Notion's "Thursday Tickets" GTM→R&D intake database (formerly "GTM → R&D", originally "CX Tickets") using the standard Rundoo [Bug] - [Issue] template. Triggers on "create a bug ticket", "file a bug", "/bug-ticket", or similar phrasings. Gathers details from conversation context (or prompts for missing fields), then writes the ticket concisely in the reporter's own voice — plain language, no AI-style analysis or suggested fixes — confirms the wording with the user, and creates the page with Status=Triage, Tag=🐞 Bug.
 ---
 
-# Create Bug Ticket in Notion (GTM → R&D)
+# Create Bug Ticket in Notion (Thursday Tickets)
 
-Use this skill when the user wants to file a bug for the product/engineering team. The target is the **🎟️ GTM → R&D** database, using the **🐛 [Bug] - [Issue]** template.
+Use this skill when the user wants to file a bug for the product/engineering team. The target is the **🎟️ Thursday Tickets** database (the GTM→R&D intake queue), using the **🐛 [Bug] - [Issue]** template.
 
-> This database was previously named "🪲 CX Tickets" and has since been repurposed as the GTM→R&D intake queue. Older instructions referencing `Ticket Type`, an `Intercom` property, or a `To Review` status are out of date — none of those exist anymore.
+> This database has been renamed twice: "🪲 CX Tickets" → "🎟️ GTM → R&D" → "🎟️ Thursday Tickets" (as of 2026-11-04). The collection ID has not changed. Its description points to the "Thursday Ticket Process" page for how the queue works. Older instructions referencing `Ticket Type`, an `Intercom` property, or a `To Review` status are out of date — none of those exist anymore.
 
 ## Read this before filing
 
@@ -52,7 +52,7 @@ These tickets go to engineers who triage a queue. A ticket that states the probl
 
 | Instead of | Write |
 |---|---|
-| `[Bug] - Investigation into intermittent tax calculation discrepancies affecting special order workflows` | `[Bug] - Tax is $0 on special orders` |
+| `[Bug] - Investigation into intermittent tax calculation discrepancies affecting special order workflows` | `[Bug] - Tax is zero on special orders` |
 | `[Bug] - User reports inability to complete checkout under certain conditions` | `[Bug] - Checkout fails on split payment` |
 | `[Bug] - Printing issue` | `[Bug] - Invoice prints blank` |
 
@@ -60,7 +60,7 @@ Name the client in the title only when the bug is specific to that client.
 
 **Worked example.** Reporter says: *"aboffs called, when they ring up a special order the tax line is 0. started yesterday I think. happens on every special order, regular orders are fine."*
 
-Title: `[Bug] - Tax is $0 on special orders at aboffs`
+Title: `[Bug] - Tax is zero on special orders at aboffs`
 
 ```
 ### 🌐 Subdomain
@@ -70,7 +70,7 @@ Title: `[Bug] - Tax is $0 on special orders at aboffs`
 - Special orders should charge tax like any other order.
 
 ### ⚠️ **Actual Experience:** *Describe what is happening.*
-- Tax line comes through as $0 on every special order. Regular orders are fine. Reporter thinks it started yesterday.
+- Tax line comes through as zero on every special order. Regular orders are fine. Reporter thinks it started yesterday.
 
 ### 🔁 **Can you reproduce? If so, list steps. If not, explain why.**
 NO — reported by aboffs over the phone, not reproduced in-house yet.
@@ -100,7 +100,7 @@ The brevity rules still apply in one respect: more **observation**, not more **a
 
 - One action per step. "Add SKU 41255 to the cart," not "add items and go to checkout."
 - Include the exact values typed or selected — quantities, tender amounts, discount codes, dates.
-- Mark the step where it goes wrong and say what appears instead: "→ tax line shows $0.00."
+- Mark the step where it goes wrong and say what appears instead: "→ tax line shows 0.00."
 - Note anything already ruled out: "Same on a fresh browser profile." "Only special orders; regular orders are fine."
 
 Ten specific steps beat four vague ones. Do not compress a path the engineer has to guess at.
@@ -123,12 +123,12 @@ Title: `[Bug] - Checkout fails on split cash/card payment`
 YES — every time, 4 for 4 attempts. Front register (POS), Chrome on Windows 11, clerk role.
 
 1. Start a new sale at the POS.
-2. Add SKU 41255, qty 1 ($48.00).
+2. Add SKU 41255, qty 1 (48.00).
 3. Tap Checkout, then Split Payment.
-4. Enter $20.00 as Cash and tap Apply. → applies fine, $28.00 balance remains.
-5. Select Card for the remaining $28.00 and swipe.
+4. Enter 20.00 as Cash and tap Apply. → applies fine, 28.00 balance remains.
+5. Select Card for the remaining 28.00 and swipe.
 6. → Spinner hangs about 10 seconds, then "Payment could not be completed."
-   Sale stays open and the $20.00 cash is still applied.
+   Sale stays open and the 20.00 cash is still applied.
 
 Full card payment on the same order works. Cash-only works. Same on a fresh
 browser profile and a second register.
@@ -140,12 +140,12 @@ Note what that example does not do: no guess about the payment processor, no sug
 
 - **Data source ID**: `24de1139-86ea-80eb-ab35-000b4262aaf4`
 - **Data source URL**: `collection://24de1139-86ea-80eb-ab35-000b4262aaf4`
-- **Database name**: 🎟️ GTM → R&D
+- **Database name**: 🎟️ Thursday Tickets
 - **Template**: `🐛 [Bug] - [Issue]` — https://app.notion.com/p/24de113986ea8037a1f6f563fb0ae0fe
 
 ## Confirm the schema first
 
-This database's schema has drifted twice and broken this skill both times. Before the first create call in a session, fetch the data source with `notion-fetch` on the `collection://` URL above and confirm:
+This database's schema has drifted repeatedly (three times by 2026-11) and broken this skill more than once. Before the first create call in a session, fetch the data source with `notion-fetch` on the `collection://` URL above and confirm:
 
 - the title property is still named `Ticket`
 - `Status` still offers `Triage`
@@ -256,8 +256,8 @@ Keep the emoji and heading wording as-is — reviewers scan for that shape. If `
 | Don't write | Write |
 |---|---|
 | `~5K rows` | `about 5K rows` |
-| `~2 min`, `~$40 off` | `about 2 min`, `about $40 off` |
-| `qty 1 * $48.00` | `qty 1 at $48.00` |
+| `~2 min`, `~40% off` | `about 2 min`, `about 40% off` |
+| `qty 1 * 48.00` | `qty 1 at 48.00` |
 | `order_id`, `snake_case` mid-sentence | wrap it in backticks |
 
 The same goes for a stray `#`, `>` or `|` starting a line — it turns into a heading, quote or table. Backtick it or reword. Confirmed live on SUP-3100, where `(~5K rows)` published as `(\~5K rows)`.
@@ -271,9 +271,9 @@ Report back with the page URL — one line is enough.
 Verified against the live schema. If the user gives a value that isn't listed, ask rather than guessing.
 
 - **`Ticket`** (title): the only title property.
-- **`Status`** (status): use `Triage` for new bugs — it is the sole `to_do` option. Full list: `Triage`, `PM TO REVIEW`, `PM ACCEPTED`, `PM REJECTED`, `ENG REJECTED`, `ENG ACCEPTED`.
+- **`Status`** (status): use `Triage` for new bugs — it is the sole `to_do` option. Full list: `Triage`, `PM TO REVIEW`, `PM ACCEPTED`, `PM REJECTED`, `ENG REJECTED`, `ENG ACCEPTED`, `CS Cancelled`.
 - **`Priority`** (select): `Most Urgent`, `Urgent`, `High`, `Medium`, `Low`.
-- **`Tag`** (multi-select): always include `🐞 Bug`. Others: `🤖 Tech`, `✨ Cleanup`, `📝 Docs`, `☎️ On-call`, `⭐ CX`, `🔒 Security`, `📊 Reporting/AI`, `🔌 Integrations`, `📖 Ledger`, `⭐ Product`, `Churn Risk`, `aboffs-golive`.
+- **`Tag`** (multi-select): always include `🐞 Bug`. Others: `🤖 Tech`, `✨ Cleanup`, `📝 Docs`, `☎️ On-call`, `⭐ CX`, `🔒 Security`, `📊 Reporting/AI`, `🔌 Integrations`, `📖 Ledger`, `⭐ Product`, `Churn Risk`, `aboffs-golive`, `🔄 Parser`.
 - **`Clients`** (relation → Client DB): array of page URLs. See "Resolving the Clients relation".
 
 ## Edge cases
@@ -282,4 +282,6 @@ Verified against the live schema. If the user gives a value that isn't listed, a
 - **No repro yet** → `NO`, plus what was tried and what is still unknown. Don't collapse it to one line; see "The reproduce section."
 - **Bug came from an Intercom conversation** → the link goes in Related Tickets / Context; there is no `Intercom` property.
 - **Bug originates from this conversation** → infer the fields from context, then confirm before creating.
-- **Parser bug** → this database has separate `[Parser Bug] - [Issue]` and `[Parser Ticket] - [Request]` templates. If the bug is parser/data-ingestion related, say so and ask whether to use the parser template instead.
+- **Parser bug** → this database has separate `[Parser Name] - [Fix Description]` and `[Parser Name] - [NEW PARSER]` templates, and a `🔄 Parser` tag. If the bug is parser/data-ingestion related, say so and ask whether to use the parser template instead.
+
+<!-- Maintainers: never write a dollar sign followed by a digit in this file. Claude Code substitutes skill arguments into dollar-digit sequences (dollar-zero is the first argument), which garbled the examples on 2026-11-04. -->
